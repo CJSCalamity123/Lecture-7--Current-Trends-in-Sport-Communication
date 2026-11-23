@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SPG 602 | Current Trends in Sport Communication</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-hover: #283548;
+      --border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --challenge-accent: #f43f5e;
+      --challenge-bg: rgba(244, 63, 94, 0.12);
+      --forecast-accent: #38bdf8;
+      --forecast-bg: rgba(56, 189, 248, 0.12);
+      --pro-accent: #10b981;
+      --pro-bg: rgba(16, 185, 129, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Header */
+    header {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto 2rem auto;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1rem;
+    }
+
+    .course-tag {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--forecast-accent);
+      margin-bottom: 0.35rem;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .meta-info {
+      text-align: right;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Navigation Tabs */
+    .tab-bar {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto 1.75rem auto;
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: var(--surface);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 0.75rem 1.35rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tab-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text-main);
+    }
+
+    .tab-btn.active[data-tab="challenges"] {
+      background: var(--challenge-bg);
+      color: var(--challenge-accent);
+      border-color: var(--challenge-accent);
+    }
+
+    .tab-btn.active[data-tab="forecast"] {
+      background: var(--forecast-bg);
+      color: var(--forecast-accent);
+      border-color: var(--forecast-accent);
+    }
+
+    .tab-btn.active[data-tab="both"] {
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--text-main);
+      border-color: var(--text-main);
+    }
+
+    /* Main Grid Layout */
+    main {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.75rem;
+      flex: 1;
+    }
+
+    main.single-view {
+      grid-template-columns: 1fr;
+    }
+
+    .pillar-section {
+      background: rgba(30, 41, 59, 0.45);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .pillar-section.hidden {
+      display: none;
+    }
+
+    .pillar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pillar-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot.challenge { background: var(--challenge-accent); box-shadow: 0 0 10px var(--challenge-accent); }
+    .dot.forecast { background: var(--forecast-accent); box-shadow: 0 0 10px var(--forecast-accent); }
+
+    .expand-all-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .expand-all-btn:hover {
+      color: var(--text-main);
+      border-color: var(--text-muted);
+    }
+
+    /* Accordion Cards */
+    .node-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.15s ease, border-color 0.2s ease;
+    }
+
+    .challenge-pillar .node-card:hover { border-color: rgba(244, 63, 94, 0.5); }
+    .forecast-pillar .node-card:hover { border-color: rgba(56, 189, 248, 0.5); }
+
+    .node-trigger {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      padding: 1rem 1.25rem;
+      text-align: left;
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .chevron {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      transition: transform 0.25s ease;
+    }
+
+    .node-card.open .chevron {
+      transform: rotate(180deg);
+    }
+
+    .sub-parts {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: rgba(15, 23, 42, 0.45);
+    }
+
+    .node-card.open .sub-parts {
+      max-height: 900px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sub-parts ul {
+      list-style: none;
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .sub-parts li {
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      padding-left: 1.15rem;
+      position: relative;
+      line-height: 1.45;
+    }
+
+    .challenge-pillar .sub-parts li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: var(--challenge-accent);
+    }
+
+    .forecast-pillar .sub-parts li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: var(--forecast-accent);
+    }
+
+    /* Footer / Preparing Professionals Strip */
+    .pro-banner {
+      max-width: 1200px;
+      width: 100%;
+      margin: 2rem auto 0 auto;
+      background: var(--pro-bg);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .pro-banner h2 {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--pro-accent);
+      margin-bottom: 0.85rem;
+    }
+
+    .pro-pills {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .pro-pill {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 0.65rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      color: #e2e8f0;
+      font-weight: 500;
+    }
+
+    /* Inside <style> (around line 180) */
+    .challenge-image-container {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .challenge-image {
+     width: 100%;
+      max-width: 240px;    /* Keeps tall vertical screenshots compact */
+      max-height: 220px;
+      object-fit: contain; /* Prevents cropping the top and bottom of the betting slip */
+      margin: 0 auto;
+      display: block;
+      border-radius: 6px;
+      border: 1px solid rgba(244, 63, 94, 0.2);
+    }
+
+    .challenge-image-caption {
+      font-size: 0.8rem;
+      color: var(--challenge-accent);
+      line-height: 1.4;
+      font-weight: 500;
+    }
+
+    @media (max-width: 850px) {
+      main { grid-template-columns: 1fr; }
+      .meta-info { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <div class="course-tag">SPG 601 • Lecture 7 Concept Map</div>
+      <h1>Current Trends in Sport Communication</h1>
+    </div>
+    <div class="meta-info">
+      <div>Christopher Sanon</div>
+      <div>November 21st, 2026</div>
+    </div>
+  </header>
+
+  <nav class="tab-bar" aria-label="View Filter">
+    <button class="tab-btn" data-tab="challenges" onclick="setView('challenges')">Part 1: Current Challenges</button>
+    <button class="tab-btn" data-tab="forecast" onclick="setView('forecast')">Part 2: Industry Forecast</button>
+  </nav>
+
+  <main id="workspace" class="single-view">
+    <!-- PART 1: CHALLENGES -->
+    <section class="pillar-section challenge-pillar" id="sec-challenges">
+      <div class="pillar-header">
+        <div class="pillar-title"><span class="dot challenge"></span> Part 1: Current Challenges</div>
+        <button class="expand-all-btn" onclick="toggleSection('sec-challenges')">Expand / Collapse All</button>
+      </div>
+
+      <div class="node-card">
+        <button class="node-trigger" onclick="toggleCard(this)">
+          <span>Macro Communication Challenges</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="sub-parts">
+          <ul>
+            <li><strong>Media Fragmentation Across Platforms:</strong> Audiences are split across linear TV, streaming apps, social media, and podcasts, making unified reach difficult.</li>
+            <li><strong>Over-Commercialization and Fan Fatigue:</strong> Heavy sponsorship saturation, jersey patches, and constant ads all-around risk alienating core supporters.</li>
+            <li><strong>Athlete Activism and Political Expression:</strong> Navigating the tension between supporting athletes' social justice voices and managing sponsor or fan backlash.</li>
+            <li><strong>Crisis Communication in a 24/7 News Cycle:</strong> Incidents go viral in seconds, requiring immediate, transparent, and carefully vetted responses.</li>
+         
+        <div class="challenge-image-container">
+              <img src="Macro.jpg" alt="Wrestling ring covered in brand sponsorships like Netflix, Fortnite, and Cricket" class="challenge-image">
+              <div class="challenge-image-caption">
+                ▸ <strong>Real-World Issue: Over-Commercialization &amp; Fatigue</strong><br>
+                Visual saturation in athletic arenas showcases the intense commercialization of modern sport spaces—often leading to fan fatigue and a disorganized media experience.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="node-card">
+        <button class="node-trigger" onclick="toggleCard(this)">
+          <span>NIL &amp; Athlete Branding</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="sub-parts">
+          <ul>
+            <li><strong>College athletes monetizing name, image, likeness</strong>: Student-athletes now operate as independent entrepreneurs securing brand deals and endorsements.</li>
+            <li><strong>Unequal access:</strong> Student visa restrictions often prevent international athletes from profiting off NIL deals on U.S. soil.</li>
+            <li><strong>Managing reputational risks for young athletes:</strong> Missteps on social media can instantly jeopardize lucrative collegiate brand partnerships.</li>
+            <li><strong>Opportunities for athlete-driven media brands:</strong> Athletes build equity through personal podcasts, apparel lines, and content studios while still in school.</li>
+          <div class="challenge-image-container">
+              <img src="NIL.jpg" alt="St. John's NIL Store Live launch" class="challenge-image">
+              <div class="challenge-image-caption">
+                ▸ <strong>Real-World Example: NIL &amp; Athlete Branding</strong><br>
+                The launch of collegiate NIL stores (such as St. John’s NIL Store shown above) illustrates how college athletes now directly monetize their name, image, and likeness, though this raises new questions about managing reputational risks and ensuring equitable access.
+              </div>
+            </div>
+          </ul>
+        </div>
+      </div>
+
+      <div class="node-card">
+        <button class="node-trigger" onclick="toggleCard(this)">
+          <span>Social Media Harassment</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="sub-parts">
+          <ul>
+            <li><strong>Online abuse targeting athletes:</strong> Direct access via comments and DMs exposes players to constant unfiltered toxicity and threats.</li>
+            <li><strong>Sport betting and harassment linked to performance:</strong> Angry bettors frequently target athletes after missed shots, injuries, or blown spreads.</li>
+            <li><strong>Gender disparities in online abuse:</strong> Female athletes disproportionately face body-shaming, sexualized harassment, and identity-based attacks.</li>
+            <li><strong>Pressure on organizations to respond:</strong> Teams and leagues face growing scrutiny to implement comment filters, mental health support, and legal protections.</li>
+          <div class="challenge-image-container">
+              <img src="Betting.jpg" alt="Lost 3-pick NBA player prop betting slip showing Luka Doncic missing a double-double" class="challenge-image">
+              <div class="challenge-image-caption">
+                ▸ <strong>Real-World Issue: Sports Betting &amp; Performance Harassment</strong><br>
+                The rise of mobile player-prop betting—where a single missed stat line (such as Luka Dončić finishing with 0 double-doubles on a $50 parlay) costs fans money—fuels direct, real-time online abuse against athletes and increases pressure on leagues and platforms to intervene.
+              </div>
+            </div>
+          </ul>
+        </div>
+      </div>
+
+      <div class="node-card">
+        <button class="node-trigger" onclick="toggleCard(this)">
+          <span>Misinformation &amp; Trust</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="sub-parts">
+          <ul>
+            <li><strong>Spread of fake news and rumors:</strong> Unverified trade rumors, fake injury reports, and AI deepfakes spread rapidly before official corrections.</li>
+            <li><strong>Declining trust in media institutions:</strong> Skepticism toward traditional sports journalism pushes fans toward independent creators and fan channels.</li>
+            <li><strong>Athletes as direct communicators:</strong> Players bypass beat reporters by breaking their own news via personal social channels and podcasts.</li>
+            <li><strong>Risk of conflicting narratives:</strong> Discrepancies between team PR statements and an athlete’s personal posts can spark public confusion.</li>
+          <div class="challenge-image-container">
+              <img src="Trade.jpg" alt="Viral fake NBA trade graphic showing Giannis Antetokounmpo in a Golden State Warriors jersey alongside Stephen Curry" class="challenge-image">
+              <div class="challenge-image-caption">
+                ▸ <strong>Real-World Issue: Viral Trade Rumors &amp; Fake Graphics</strong><br>
+                Polished, aggregator-style trade edits (such as a mock graphic depicting Giannis Antetokounmpo traded to the Golden State Warriors alongside Stephen Curry) spread rapidly on social media as fake news, eroding trust in sports reporting and forcing athletes or teams to counter conflicting narratives.
+              </div>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- PART 2: FORECAST -->
+    <section class="pillar-section forecast-pillar" id="sec-forecast">
+      <div class="pillar-header">
+        <div class="pillar-title"><span class="dot forecast"></span> Part 2: Industry Forecast</div>
+        <button class="expand-all-btn" onclick="toggleSection('sec-forecast')">Expand / Collapse All</button>
+      </div>
+
+      <div class="node-card">
+        <button class="node-trigger" onclick="toggleCard(this)">
+          <span>Streaming &amp; Direct-to-Consumer Models</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="sub-parts">
+          <ul>
+            <li><strong>Growth of streaming platforms (ESPN+, Amazon, Apple, Peacock):</strong> Tech giants and digital platforms are aggressively acquiring live sports broadcast rights.</li>
+            <li><strong>Fragmented audience, rising costs for fans:</strong> Following a single team across a season often requires juggling multiple paid subscriptions.</li>
+            <li><strong>Leagues experimenting with subscriptions and bundles:</strong> Leagues are launching proprietary D2C apps (like NBA League Pass) and cross-platform bundles to retain viewers.</li>
+            <li><strong>Greater global reach but more competition:</strong> Digital distribution unlocks worldwide viewership while forcing sports to compete with gaming and on-demand entertainment.</li>
+      <div class="forecast-image-container">
+              <img src="Streaming.jpg" alt="Smart TV screen displaying streaming platform apps including ESPN, Apple TV, Prime Video, Peacock, Netflix, and YouTube TV" class="forecast-image">
+              <div class="forecast-image-caption">
+                ▸ <strong>Industry Trend: Platform Fragmentation &amp; Subscription Fatigue</strong><br>
+                As live sports rights split across standalone apps (such as ESPN+, Apple TV, Peacock, Prime Video, and Netflix), fans must navigate multiple subscriptions and rising costs to follow a single league or team.
+              </div>
+            </div>
+          </ul>
+        </div>
+      </div>
+
+      <div class="node-card">
+        <button class="node-trigger" onclick="toggleCard(this)">
+          <span>Technology &amp; Innovation</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="sub-parts">
+          <ul>
+            <li><strong>AI personalization of fan experiences:</strong> Algorithms tailor highlight reels, real-time stats, and ticket offers to individual fan habits.</li>
+            <li><strong>AR/VR immersive sport experiences:</strong> Spatial computing and virtual reality offer courtside views, interactive overlays, and virtual watch parties.</li>
+            <li><strong>Data-driven sponsorship and marketing:</strong> Brands rely on granular fan engagement metrics rather than broad impressions to measure ROI.</li>
+            <li><strong>Athlete-created media companies:</strong> Stars launch major production houses (e.g., Uninterrupted, Religion of Sports) to own their storytelling IP.</li>
+          <div class="forecast-image-container">
+              <img src="VR.webp" alt="Immersive VR and spatial computing basketball arena experience showing courtside views and multi-screen displays" class="forecast-image"
+              alt="Lost 3-pick NBA player prop betting slip" 
+     class="challenge-image" 
+     style="max-width: 750px; max-height: 400px;">
+              <div class="forecast-image-caption">
+                ▸ <strong>Industry Trend: AR/VR Immersive Sport Experiences</strong><br>
+                Virtual reality and spatial computing environments (such as virtual courtside suites with live multi-angle feeds and interactive arena views) transform remote viewing into personalized, stadium-like experiences.
+              </div>
+            </div>
+          </ul>
+        </div>
+      </div>
+
+      <div class="node-card">
+        <button class="node-trigger" onclick="toggleCard(this)">
+          <span>Globalization of Sport Communication</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="sub-parts">
+          <ul>
+            <li><strong>International fan bases growing:</strong> Leagues leverage global stars and international regular-season games to build overseas followings.</li>
+            <li><strong>Cross-cultural marketing challenges:</strong> Campaigns must be localized for language, cultural norms, and regional time zones rather than simply translated.</li>
+            <li><strong>Expansion into emerging markets:</strong> Heavy investment in growing sports fandom across regions like India, Africa, Latin America, and the Middle East.</li>
+            <li><strong>Increased competition for attention:</strong> Domestic leagues must vie for screen time against premier international properties like the Premier League and Formula 1.</li>
+          <div class="forecast-image-container">
+              <img src="International.jpg" alt="NBA Global Games 2027 promotional graphic featuring Victor Wembanyama and Zion Williamson for Paris and Manchester games on Prime Video" class="forecast-image">
+              <div class="forecast-image-caption">
+                ▸ <strong>Industry Trend: International Showcase Games &amp; Global Distribution</strong><br>
+                Events like the NBA Global Games in Paris and Manchester (featuring international stars like Victor Wembanyama and global streaming partners like Prime Video) illustrate how leagues grow overseas fan bases while navigating cross-cultural marketing and competing for international attention.
+              </div>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- PREPARING PROFESSIONALS -->
+  <aside class="pro-banner">
+    <h2>Preparing Professionals for the Upcoming Future Trends</h2>
+    <div class="pro-pills">
+      <div class="pro-pill"><strong>Emphasize adaptability and innovation:</strong> Professionals must pivot quickly as algorithms, platforms, and audience habits constantly shift.</div>
+      <div class="pro-pill"><strong>Develop digital literacy and analytics skills:</strong> Proficiency in short-form video, social listening tools, and engagement metrics is now essential.</div>
+      <div class="pro-pill"><strong>Understand ethics, diversity, and inclusion:</strong> Communicators need cultural competence to avoid tone-deaf campaigns and represent diverse fan bases authentically.</div>
+      <div class="pro-pill"><strong>Lifelong learning to keep up with change:</strong> Ongoing upskilling in emerging tools like generative AI and evolving media laws is critical for career longevity.</div>
+    </div>
+  </aside>
+
+  <script>
+    function toggleCard(btn) {
+      const card = btn.closest('.node-card');
+      card.classList.toggle('open');
+    }
+
+    function toggleSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      const cards = section.querySelectorAll('.node-card');
+      const anyClosed = Array.from(cards).some(c => !c.classList.contains('open'));
+      cards.forEach(c => {
+        if (anyClosed) {
+          c.classList.add('open');
+        } else {
+          c.classList.remove('open');
+        }
+      });
+    }
+
+    function setView(view) {
+      const workspace = document.getElementById('workspace');
+      const challenges = document.getElementById('sec-challenges');
+      const forecast = document.getElementById('sec-forecast');
+      const buttons = document.querySelectorAll('.tab-btn');
+
+      buttons.forEach(b => b.classList.toggle('active', b.dataset.tab === view));
+
+      if (view === 'both') {
+        workspace.classList.remove('single-view');
+        challenges.classList.remove('hidden');
+        forecast.classList.remove('hidden');
+      } else if (view === 'challenges') {
+        workspace.classList.add('single-view');
+        challenges.classList.remove('hidden');
+        forecast.classList.add('hidden');
+      } else if (view === 'forecast') {
+        workspace.classList.add('single-view');
+        challenges.classList.add('hidden');
+        forecast.classList.remove('hidden');
+      }
+    }
+  </script>
+</body>
+</html>
